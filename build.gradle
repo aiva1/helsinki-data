@@ -24,6 +24,7 @@ repositories {
 dependencies {
     
     implementation 'org.apache.spark:spark-core_2.12:2.4.4'
+    implementation 'org.apache.spark:spark-sql_2.12:2.4.4'
 
     //implementation 'com.google.guava:guava:28.0-jre' does not work with Spark 2.4.4 java.lang.IllegalAccessError: Stopwatch
     implementation 'com.google.guava:guava:15.0-jre'

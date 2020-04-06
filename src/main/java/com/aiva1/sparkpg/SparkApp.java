@@ -4,18 +4,12 @@
 package com.aiva1.sparkpg;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import scala.Tuple2;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 
 public class SparkApp {
-
-    private static final Pattern SPACE = Pattern.compile(" ");
 
     public String getGreeting() {
         return "Hello world.";
@@ -25,41 +19,29 @@ public class SparkApp {
         SparkApp leApp = new SparkApp();
         System.out.println(leApp.getGreeting());
 
-        //Create a SparkContext to initialize
-        SparkConf sparkConf = new SparkConf().setMaster("local").setAppName("Word Count");
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("Java Spark SQL basic example")
+                .config("spark.some.config.option", "some-value")
+                .getOrCreate();
 
-        // Create a Java version of the Spark Context
-        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+        // Loading data from a JDBC source
+        Dataset<Row> jdbcDF = spark.read()
+                .format("jdbc")
+                .option("url", "jdbc:postgresql:dbserver")
+                .option("dbtable", "schema.tablename")
+                .option("user", "username")
+                .option("password", "password")
+                .load();
 
-        // Load the text into a Spark RDD, which is a distributed representation of each line of text
-        JavaRDD<String> textFile = ctx.textFile("src/main/resources/alice-in-wonderland.txt");
-
-        leApp.countAndPrintResultToConsole(textFile);
-        //leApp.countAndSaveToLocalFile(textFile);
-
-        ctx.stop();
     }
 
-    /** Print each word and it's amount to console */
-    private void countAndPrintResultToConsole(JavaRDD<String> textFile) {
-        JavaRDD<String> words = textFile.flatMap(s -> Arrays.asList(SPACE.split(s)).iterator());
-        JavaPairRDD<String, Integer> ones = words.mapToPair(word -> new Tuple2<>(word, 1));
-        JavaPairRDD<String, Integer> counts = ones.reduceByKey((Integer i1, Integer i2) -> i1 + i2);
 
-        List<Tuple2<String, Integer>> output = counts.collect();
-        for (Tuple2<?, ?> tuple : output) {
-            System.out.println(tuple._1() + ": " + tuple._2());
-        }
-    }
 
-    /** Print total word count and save result as text file */
-    private void countAndSaveToLocalFile(JavaRDD<String> textFile) {
-        JavaPairRDD<String, Integer> counts = textFile
-                .flatMap(s -> Arrays.asList(s.split("[ ,]")).iterator())
-                .mapToPair(word -> new Tuple2<>(word, 1))
-                .reduceByKey((a, b) -> a + b);
-        counts.foreach(p -> System.out.println(p));
-        System.out.println("Total words: " + counts.count());
-        counts.saveAsTextFile("src/main/resources/wordcount");
-    }
+
+
+
+
+
+
 }
