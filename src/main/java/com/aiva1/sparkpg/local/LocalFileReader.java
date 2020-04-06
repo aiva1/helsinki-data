@@ -36,6 +36,7 @@ public class LocalFileReader {
 
     /**
      * Print each word and it's amount to console
+     *
      * @param fileReadFrom path to text file to read from
      * @return total count of words found
      */
