@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class LocalFileReader {
+public class FromLocalFileReader {
 
     private static final Pattern SPACE = Pattern.compile(" ");
 
-    public LocalFileReader() {
+    public FromLocalFileReader() {
     }
 
     public void executeCountOfLocalFile() {

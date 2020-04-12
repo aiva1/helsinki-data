@@ -3,6 +3,8 @@
  */
 package com.aiva1.sparkpg;
 
+import com.aiva1.sparkpg.database.FromDatabaseToCSVTransformer;
+
 public class SparkApp {
 
     public String getGreeting() {
