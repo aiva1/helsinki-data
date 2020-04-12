@@ -3,59 +3,26 @@
  */
 package com.aiva1.sparkpg;
 
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import scala.collection.immutable.Map;
-
 public class SparkApp {
 
     public String getGreeting() {
         return "Hello world.";
     }
 
-    public static void log(Object... args) {
-        for (Object elem : args) {
-            System.out.println(elem.toString());
+        public static void log(Object... args) {
+            for (Object elem : args) {
+                System.out.println(elem.toString());
+            }
         }
-    }
 
     public static void main(String[] args) {
         SparkApp leApp = new SparkApp();
         System.out.println(leApp.getGreeting());
 
-        SparkSession sparkSession = SparkSession
-                .builder()
-                .appName("Java Spark SQL basic example")
-                .config("sparkSession.some.config.option", "some-value")
-                .master("local")
-                .getOrCreate();
+        FromDatabaseToCSVTransformer toCsv = new FromDatabaseToCSVTransformer();
+        boolean isSuccess = toCsv.executeNonUsSummaryTransformation();
 
-        Map<String, String> allProperties = sparkSession.conf().getAll();
+        log(isSuccess);
 
-
-        log("spark session created OK");
-
-        // Loading data from a JDBC source
-        Dataset<Row> jdbcDF = sparkSession.read()
-                .format("jdbc")
-                .option("driver", "org.postgresql.Driver")
-                .option("url", "jdbc:postgresql://localhost:5432/postgres")
-                .option("dbtable", "reports")
-                .option("user", "postgres")
-                .option("password", "docker")
-                .load();
-
-        long count = jdbcDF.count();
-        log("Entries in db: " + count);
     }
-
-
-
-
-
-
-
-
-
 }
